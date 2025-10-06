@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<classpath>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
+	<classpathentry kind="src" path="ps1/src"/>
+	<classpathentry kind="src" path="ps1/test"/>
+	<classpathentry kind="lib" path="__MACOSX/ps1/lib/._javax.json-1.0.jar"/>
+	<classpathentry kind="lib" path="ps1/lib/javax.json-1.0.jar"/>
+	<classpathentry kind="output" path="bin"/>
+</classpath>
