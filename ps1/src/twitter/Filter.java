@@ -3,7 +3,10 @@
  */
 package twitter;
 
+import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 /**
  * Filter consists of methods that filter a list of tweets for those matching a
@@ -27,8 +30,15 @@ public class Filter {
      *         in the same order as in the input list.
      */
     public static List<Tweet> writtenBy(List<Tweet> tweets, String username) {
-        throw new RuntimeException("not implemented");
+        List<Tweet> result = new ArrayList<>();
+        for (Tweet tweet : tweets) {
+            if (tweet.getAuthor().equalsIgnoreCase(username)) {
+                result.add(tweet);
+            }
+        }
+        return result;
     }
+    
 
     /**
      * Find tweets that were sent during a particular timespan.
@@ -41,7 +51,14 @@ public class Filter {
      *         in the same order as in the input list.
      */
     public static List<Tweet> inTimespan(List<Tweet> tweets, Timespan timespan) {
-        throw new RuntimeException("not implemented");
+        List<Tweet> result = new ArrayList<>();
+        for (Tweet tweet : tweets) {
+            if (!tweet.getTimestamp().isBefore(timespan.getStart())
+                    && !tweet.getTimestamp().isAfter(timespan.getEnd())) {
+                result.add(tweet);
+            }
+        }
+        return result;
     }
 
     /**
@@ -60,7 +77,24 @@ public class Filter {
      *         same order as in the input list.
      */
     public static List<Tweet> containing(List<Tweet> tweets, List<String> words) {
-        throw new RuntimeException("not implemented");
+        List<Tweet> result = new ArrayList<>();
+        Set<String> lowerWords = new HashSet<>();
+        for (String word : words) {
+            lowerWords.add(word.toLowerCase());
+        }
+
+        for (Tweet tweet : tweets) {
+            String[] tweetWords = tweet.getText().toLowerCase().split("\\s+");
+            for (String tweetWord : tweetWords) {
+                // Remove punctuation to match words accurately
+                tweetWord = tweetWord.replaceAll("\\W", "");
+                if (lowerWords.contains(tweetWord)) {
+                    result.add(tweet);
+                    break; // Add each tweet at most once
+                }
+            }
+        }
+        return result;
     }
 
 }
