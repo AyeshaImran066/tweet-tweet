@@ -1,10 +1,11 @@
-/* Copyright (c) 2007-2016 MIT 6.005 course staff, all rights reserved.
- * Redistribution of original or derived work requires permission of course staff.
- */
 package twitter;
 
+import java.time.Instant;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * Extract consists of methods that extract information from a list of tweets.
@@ -24,7 +25,24 @@ public class Extract {
      *         every tweet in the list.
      */
     public static Timespan getTimespan(List<Tweet> tweets) {
-        throw new RuntimeException("not implemented");
+        if (tweets.isEmpty()) {
+            throw new IllegalArgumentException("Tweets list cannot be empty");
+        }
+
+        Instant start = tweets.get(0).getTimestamp();
+        Instant end = start;
+
+        for (Tweet tweet : tweets) {
+            Instant t = tweet.getTimestamp();
+            if (t.isBefore(start)) {
+                start = t;
+            }
+            if (t.isAfter(end)) {
+                end = t;
+            }
+        }
+
+        return new Timespan(start, end);
     }
 
     /**
@@ -43,7 +61,22 @@ public class Extract {
      *         include a username at most once.
      */
     public static Set<String> getMentionedUsers(List<Tweet> tweets) {
-        throw new RuntimeException("not implemented");
+        Set<String> mentioned = new HashSet<>();
+
+        // Regex ensures:
+        // 1. "@" must be at start of string or preceded by non-username character
+        // 2. Username consists of letters, digits, underscore
+        // 3. Ends at a boundary (not followed by username char)
+        Pattern pattern = Pattern.compile("(?<=^|[^A-Za-z0-9_])@([A-Za-z0-9_]+)(?=$|[^A-Za-z0-9_])");
+
+        for (Tweet tweet : tweets) {
+            Matcher matcher = pattern.matcher(tweet.getText());
+            while (matcher.find()) {
+                mentioned.add(matcher.group(1).toLowerCase()); // normalize to lowercase
+            }
+        }
+
+        return mentioned;
     }
 
 }
